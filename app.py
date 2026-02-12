@@ -11,8 +11,8 @@ app = Flask(__name__)
 # ---------------------------------------------------------
 # Hardcoded secret key.
 # If an attacker obtains this key, they can forge session cookies.
-# Proper systems store this securely in environment variables.
-# ---------------------------------------------------------
+# Proper systems store this securely in environment variables. 
+# ----------------------------------------------------------
 app.secret_key = "insecure-secret-key"
 
 
