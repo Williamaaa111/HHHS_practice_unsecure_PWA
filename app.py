@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, session, send_file
+from flask import Flask, render_template, request, redirect, session, send_file, abort
 import sqlite3
 import os
 import time
+import os.path
 from waitress import serve
 
 app = Flask(__name__)
@@ -170,17 +171,14 @@ def redirect_me():
 
 @app.route('/download')
 def download():
-
-    # ---------------------------------------------------------
-    # FILE ATTACK (Path Traversal)
-    # ---------------------------------------------------------
-    # User controls filename.
-    # Attacker could request:
-    # /download?file=../../../../etc/passwd
-    # and retrieve sensitive server files.
-    # ---------------------------------------------------------
-    filename = request.args.get('file')
-    return send_file(filename)
+    base_path = '/server/static/files/'
+    filename = request.args.get('p')
+    fullpath = os.path.normpath(os.path.join(base_path, filename))
+    #Verify that the full path is within the intended directory to prevent path traversal.
+    if not fullpath.startswith(base_path):
+        raise Exception("not allowed")
+    data = open(fullpath, 'rb').read()
+    return data
 
 
 @app.route('/transfer_money', methods=['POST'])
